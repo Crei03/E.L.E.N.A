@@ -34,6 +34,13 @@
       margin: 0;
     }
 
+    #messages li small {
+      display: block;
+      font-size: 0.75em;
+      color: #666;
+      margin-top: 4px;
+    }
+
     #messages li.sent {
       text-align: right;
     }
@@ -42,6 +49,7 @@
       background: #0084ff;
       color: white;
     }
+    
 
     #messages li.received p {
       background: #e9ecef;
