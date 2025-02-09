@@ -17,14 +17,30 @@
       }
 
       const res = await fetch('https://random-data-api.com/api/users/random_user')
+      const { username: randomUsername} = await res.json()
 
       localStorage.setItem('username', randomUsername)
       return randomUsername
+    }
+
+    const getUserid = async () => {
+      const userid = localStorage.getItem('userid')
+      if (userid) {
+        console.log(`User existed ${userid}`)
+        return userid
+      }
+
+      const res = await fetch('https://random-data-api.com/api/users/random_user')
+      const { id: randomUserid} = await res.json()
+
+      localStorage.setItem('userid', randomUserid)
+      return randomUserid
     }
     
     const socket = io({
       auth: {
         username: await getUsername(),
+        userid: await getUserid(),
         serverOffset: 0
       }
     })
@@ -33,18 +49,19 @@
     const input = document.getElementById("input");
     const messages = document.getElementById("messages");
 
-    socket.on('chat message', (msg, serverOffset, username) => {
-      const localUsername = localStorage.getItem('username');
-      const isLocalUser = username === localUsername;
+    socket.on('chat message', (msg, serverOffset, username, userid) => {
+      const localUserid = localStorage.getItem('userid');
+      const isLocalUser = userid === localUserid;
+      
       const item = `<li class="${isLocalUser ? 'sent' : 'received'}">
         <p>${msg}</p>
         <small>${username}</small>
-      </li>`
-      messages.insertAdjacentHTML('beforeend', item)
-      socket.auth.serverOffset = serverOffset
-      // scroll to bottom of messages
-      messages.scrollTop = messages.scrollHeight
-    })
+      </li>`;
+      
+      messages.insertAdjacentHTML('beforeend', item);
+      socket.auth.serverOffset = serverOffset;
+      messages.scrollTop = messages.scrollHeight;
+    });
 
     form.addEventListener('submit', (e) => {
       e.preventDefault()
